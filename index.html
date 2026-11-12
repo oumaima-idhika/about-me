@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oumaima Idhika</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,100&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --paper: #eef1e8;      /* pale lichen */
+    --paper-2: #e2e8da;    /* moss shade */
+    --ink: #22322a;        /* deep moss */
+    --ink-soft: #4b5b50;
+    --leaf: #4c7a4e;       /* leaf green */
+    --stem: #9fb791;       /* young stem */
+    --bark: #7a6248;       /* bark brown, for dates */
+    --card: #f8faf4;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #171f19;
+      --paper-2: #1f2a22;
+      --ink: #e1e9dc;
+      --ink-soft: #a9b8a8;
+      --leaf: #8dbb86;
+      --stem: #3f5a42;
+      --bark: #c9ae8b;
+      --card: #1d271f;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: var(--leaf); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--leaf); outline-offset: 3px; border-radius: 4px; }
+
+  h1, h2, h3 {
+    font-family: "Fraunces", Georgia, "Times New Roman", serif;
+    font-variation-settings: "SOFT" 100;
+    font-weight: 500;
+    line-height: 1.15;
+    margin: 0;
+  }
+  h2 { font-size: clamp(1.6rem, 3.2vw, 2.1rem); margin-bottom: 1.25rem; }
+
+  .wrap { width: min(760px, 100% - 2.5rem); margin-inline: auto; }
+  .wide { width: min(1040px, 100% - 2.5rem); margin-inline: auto; }
+  section { padding: 3.5rem 0; }
+  section + section { border-top: 1px solid var(--paper-2); }
+  p { margin: 0 0 1rem; max-width: 66ch; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 4.5rem 0 3.5rem;
+    background:
+      radial-gradient(ellipse 60% 70% at 85% 0%, color-mix(in srgb, var(--leaf) 16%, transparent), transparent 70%),
+      var(--paper);
+  }
+  .hero .wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .portrait {
+    width: 190px; height: 190px;
+    border-radius: 50%;
+    padding: 6px;
+    background: conic-gradient(from 200deg, var(--leaf), var(--stem), var(--bark), var(--leaf));
+  }
+  .portrait img { width: 100%; height: 100%; border-radius: 50%; background: var(--paper); }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -0.01em; }
+  .hero .facts { margin: 1rem 0 1.5rem; color: var(--ink-soft); }
+  .hero .facts span { display: block; }
+  .links { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .links a {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .45rem 1rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--leaf) 45%, transparent);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: .95rem;
+  }
+  .links a:hover { background: color-mix(in srgb, var(--leaf) 12%, transparent); }
+  .links svg { width: 16px; height: 16px; fill: var(--leaf); }
+
+  /* ---------- roots gallery: justified rows, no cropping ---------- */
+  .gallery { display: grid; gap: 10px; margin-top: 1.75rem; }
+  .gallery .row { display: flex; gap: 10px; }
+  .gallery figure { margin: 0; flex: var(--g) 1 0; min-width: 0; }
+  .gallery img { width: 100%; height: auto; aspect-ratio: var(--ar); object-fit: cover; border-radius: 14px; background: var(--paper-2); }
+
+  /* ---------- path to HWR ---------- */
+  .path { display: grid; grid-template-columns: 1fr 230px; gap: 2.25rem; align-items: start; }
+  .path img { border-radius: 14px; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+
+  /* ---------- education & work ---------- */
+  .rings { list-style: none; margin: 0; padding: 0; }
+  .rings li {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 1.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px dashed color-mix(in srgb, var(--leaf) 30%, transparent);
+  }
+  .rings li:last-child { border-bottom: 0; }
+  .rings .when { color: var(--bark); font-weight: 600; font-size: .92rem; padding-top: .15rem; }
+  .rings .what { font-weight: 600; }
+  .rings .detail { color: var(--ink-soft); font-size: .95rem; margin-top: .15rem; }
+  .rings .at { font-size: .92rem; color: var(--leaf); margin-top: .2rem; }
+  .split { margin-top: 2.75rem; }
+
+  /* ---------- what I love ---------- */
+  .love-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+  .love-group h3 { font-size: 1.25rem; margin-bottom: .75rem; }
+  .love-group .row { display: flex; gap: 8px; }
+  .love-group figure { margin: 0; flex: 1 1 0; min-width: 0; }
+  .love-group img { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; background: var(--paper-2); }
+
+  /* ---------- map ---------- */
+  .map { width: 100%; height: 460px; border-radius: 14px; background: var(--paper-2); overflow: hidden; z-index: 0; }
+  .leaflet-container { font-family: "Figtree", system-ui, sans-serif; }
+  .leaflet-popup-content { margin: 10px 14px; font-size: .92rem; line-height: 1.45; }
+  .leaflet-popup-content b { font-family: "Fraunces", Georgia, serif; font-size: 1.05rem; font-weight: 500; }
+  .pin svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+
+  /* ---------- small screens ---------- */
+  @media (max-width: 720px) {
+    .hero { padding-top: 3rem; }
+    .hero .wrap { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+    .portrait { margin-inline: auto; width: 160px; height: 160px; }
+    .links { justify-content: center; }
+    .path { grid-template-columns: 1fr; }
+    .path img { max-width: 260px; }
+    .rings li { grid-template-columns: 1fr; gap: .2rem; }
+    .love-groups { grid-template-columns: 1fr; gap: 2rem; }
+    .map { height: 360px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="portrait"><img src="images/me_round.png" alt="Portrait of Oumaima Idhika"></div>
+    <div>
+      <h1>🌿 Oumaima Idhika</h1>
+      <p class="facts">
+        <span>🌱 25 years old, from Rabat, now in Berlin</span>
+        <span>🌿 Happy to start my Master’s in Business Intelligence &amp; Process Management at HWR Berlin</span>
+        <span>🍃 Data engineer with 2+ years in data science &amp; analytics</span>
+      </p>
+      <!-- 🔗 Replace YOUR_LINKEDIN_URL below -->
+      <nav class="links" aria-label="Contact">
+        <a href="">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.2c0-1.2 0-2.9-1.8-2.9s-2 1.4-2 2.8V21h-4z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/oumaima-idhika">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+          GitHub
+        </a>
+        <a href="mailto:oumaimaidhika2001@gmail.com">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.2L4.4 7H19.6zM4 8.6V17h16V8.6l-8 5.4z"/></svg>
+          Email
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ ROOTS ============ -->
+<section id="roots">
+  <div class="wrap">
+    <h2>🌍 Roots</h2>
+    <p>I am from <strong>Rabat</strong>, Morocco’s capital on the Atlantic coast. It is a calm, green city with an old medina, busy souks, gardens and ancient ruins.</p>
+    <p>It is where I went to school, did my preparatory classes and earned my engineering degree.</p>
+  </div>
+  <div class="wide">
+    <div class="gallery">
+      <div class="row">
+        <figure style="--ar: 825/1100; --g: 0.7500"><img src="images/garden.jpg" alt="A garden in Rabat"></figure>
+        <figure style="--ar: 709/1100; --g: 0.6445"><img src="images/storks.jpg" alt="Storks nesting in an olive tree"></figure>
+        <figure style="--ar: 900/1600; --g: 0.5625"><img src="images/medina_street.jpg" alt="A narrow street lined with plants in the medina"></figure>
+      </div>
+      <div class="row">
+        <figure style="--ar: 1284/963; --g: 1.3333"><img src="images/ruins.jpg" alt="Ancient ruins in Rabat"></figure>
+        <figure style="--ar: 717/489; --g: 1.4663"><img src="images/souk.jpg" alt="A covered souk in the medina of Rabat"></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PATH TO HWR ============ -->
+<section id="path">
+  <div class="wrap">
+    <h2>🍂 My path to HWR</h2>
+    <div class="path">
+      <div>
+      <p>After graduating from INPT as a data engineer, I worked mostly in web development, with some data projects along the way. Today I want to grow towards a management role, which is why I joined the <strong>Business Intelligence &amp; Process Management</strong> Master’s at HWR Berlin.</p>
+      </div>
+      <img src="images/inpt_graduation.jpg" alt="Oumaima at INPT">
+    </div>
+  </div>
+</section>
+
+<!-- ============ EDUCATION & WORK ============ -->
+<section id="cv">
+  <div class="wrap">
+    <h2>🌱 Education</h2>
+    <ul class="rings">
+      <li><span class="when">2026 – today</span><div><div class="what">Master’s in Business Intelligence &amp; Process Management</div><div class="at">HWR Berlin</div></div></li>
+      <li><span class="when">2020 – 2023</span><div><div class="what">Engineering degree in Data Engineering</div><div class="at">INPT, Rabat</div></div></li>
+      <li><span class="when">2018 – 2020</span><div><div class="what">Scientific preparatory classes, Mathematics &amp; Physics (MP/MPSI)</div><div class="at">CPGE Moulay Youssef, Rabat</div></div></li>
+      <li><span class="when">2017 – 2018</span><div><div class="what">Baccalaureate in Mathematical Sciences</div><div class="at">Abi Dar Al Ghifari High School, Rabat</div></div></li>
+    </ul>
+
+    <h2 class="split">🌿 Work experience</h2>
+    <ul class="rings">
+      <li><span class="when">Oct 2023 – Jun 2026</span><div><div class="what">Freelance Web Developer & Data Scientist</div><div class="detail">Built new features for a web platform that helps hospitals plan their operating rooms, with some data work on forecasting and scheduling</div><div class="at">SmartOp, France (remote)</div></div></li>
+      <li><span class="when">Jan – Jul 2023</span><div><div class="what">End-of-study internship in SAP BI</div><div class="detail">BI solution for budget planning with SAP Analytics tools</div><div class="at">Inetum, Morocco</div></div></li>
+      <li><span class="when">Jul – Sep 2022</span><div><div class="what">Technical internship in AI</div><div class="detail">Real-time detection, tracking and trajectory analysis of vehicles and people at level crossings</div><div class="at">MAScIR Foundation, Morocco</div></div></li>
+      <li><span class="when">Jul – Oct 2021</span><div><div class="what">Internship in web development</div><div class="detail">Design and build of a customised decision chatbot generator</div><div class="at">HBS, Morocco (remote)</div></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ WHAT I LOVE ============ -->
+<section id="love">
+  <div class="wide">
+    <h2>🌻 What I love</h2>
+    <div class="love-groups">
+      <div class="love-group">
+        <h3>🏛️ Museums</h3>
+        <div class="row">
+          <figure style="--ar: 786/1100; --g: 0.7145"><img src="images/museum.jpg" alt="Visiting a museum"></figure>
+          <figure style="--ar: 825/1100; --g: 0.7500"><img src="images/statue.jpg" alt="An ancient marble statue in a museum"></figure>
+        </div>
+      </div>
+      <div class="love-group">
+        <h3>🌿 Nature</h3>
+        <div class="row">
+          <figure style="--ar: 779/1100; --g: 0.7082"><img src="images/peacock.jpg" alt="A peacock in a garden"></figure>
+          <figure style="--ar: 825/1100; --g: 0.7500"><img src="images/monkey.jpg" alt="A Barbary macaque in a forest"></figure>
+        </div>
+      </div>
+      <div class="love-group">
+        <h3>🏺 Pottery</h3>
+        <div class="row">
+          <figure style="--ar: 825/1100; --g: 0.7500"><img src="images/medina_pottery.jpg" alt="Pottery in the medina"></figure>
+          <figure style="--ar: 678/1100; --g: 0.6164"><img src="images/my_pottery.jpg" alt="A clay vase I made, with flower details"></figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LANGUAGES ============ -->
+<section id="languages">
+  <div class="wrap">
+    <h2>🌼 Languages</h2>
+    <p>Arabic , French, English</p>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section id="map">
+  <div class="wrap">
+    <h2>🗺️ From Rabat to Berlin</h2>
+    <div id="journey" class="map" role="img" aria-label="Map of my journey from Rabat to Berlin"></div>
+  </div>
+</section>
+
+</main>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  (function () {
+    if (!window.L) return;
+    var map = L.map('journey', { scrollWheelZoom: false });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Tiles &copy; Esri'
+    }).addTo(map);
+
+    var pin = L.divIcon({
+      className: 'pin',
+      html: '<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C6.7 0 0 6.7 0 15c0 11 15 25 15 25s15-14 15-25C30 6.7 23.3 0 15 0z" fill="#4c7a4e"/><circle cx="15" cy="15" r="6" fill="#eef1e8"/></svg>',
+      iconSize: [30, 40], iconAnchor: [15, 40], popupAnchor: [0, -36]
+    });
+
+    var rabat = [34.0209, -6.8416], berlin = [52.52, 13.405];
+    L.marker(rabat, { icon: pin }).addTo(map).bindPopup('<b>🌱 Rabat</b><br>Where I grew up and studied');
+    L.marker(berlin, { icon: pin }).addTo(map).bindPopup('<b>🌻 Berlin</b><br>Master’s at HWR Berlin');
+
+    // a gentle curve between the two cities
+    var pts = [], n = 60;
+    for (var i = 0; i <= n; i++) {
+      var t = i / n, bend = Math.sin(Math.PI * t) * 3.5;
+      pts.push([rabat[0] + (berlin[0] - rabat[0]) * t + bend * 0.5,
+                rabat[1] + (berlin[1] - rabat[1]) * t - bend]);
+    }
+    L.polyline(pts, { color: '#4c7a4e', weight: 3, opacity: .85 }).addTo(map);
+
+    map.fitBounds([rabat, berlin], { padding: [50, 50] });
+  })();
+</script>
+</body>
+</html>
